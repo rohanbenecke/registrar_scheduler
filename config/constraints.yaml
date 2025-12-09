@@ -1,0 +1,113 @@
+# Medical Registrar Scheduling Constraints Configuration
+# This file defines all scheduling rules and can be easily modified
+
+# HARD CONSTRAINTS (must be satisfied)
+hard_constraints:
+  # Work hour limits
+  max_consecutive_shifts: 5  # Maximum shifts in a row
+  min_rest_hours: 11  # Minimum hours between shifts
+  max_weekly_hours: 48  # Maximum hours per week
+  max_night_shifts_per_week: 3  # Maximum night shifts per week
+
+  # Coverage requirements
+  min_registrars_per_shift:
+    day: 3  # Minimum registrars for day shifts
+    evening: 2  # Minimum registrars for evening shifts
+    night: 2  # Minimum registrars for night shifts
+    weekend_day: 2  # Minimum registrars for weekend day shifts
+    weekend_night: 2  # Minimum registrars for weekend night shifts
+
+  # Mandatory off days
+  min_days_off_per_week: 2  # Minimum days off per week
+
+# SOFT CONSTRAINTS (optimize for these, but can be violated if necessary)
+soft_constraints:
+  # Fairness
+  balance_night_shifts: true  # Try to distribute night shifts evenly
+  balance_weekend_shifts: true  # Try to distribute weekend shifts evenly
+  balance_total_hours: true  # Try to distribute total hours evenly
+
+  # Preferences (weight: 1-10, higher = more important)
+  respect_leave_requests:
+    enabled: true
+    weight: 10
+
+  respect_preferred_shifts:
+    enabled: true
+    weight: 5
+
+  avoid_back_to_back_nights:
+    enabled: true
+    weight: 7
+
+  prefer_consistent_shift_times:
+    enabled: true
+    weight: 3  # Some people prefer always working days or always nights
+
+# SHIFT DEFINITIONS
+shift_types:
+  day:
+    start_hour: 8
+    end_hour: 17
+    duration_hours: 9
+    desirability_score: 0  # Neutral
+
+  evening:
+    start_hour: 13
+    end_hour: 21
+    duration_hours: 8
+    desirability_score: -2  # Slightly undesirable
+
+  night:
+    start_hour: 21
+    end_hour: 8  # Next day
+    duration_hours: 11
+    desirability_score: -5  # More undesirable
+
+  weekend_day:
+    start_hour: 8
+    end_hour: 20
+    duration_hours: 12
+    desirability_score: -3
+
+  weekend_night:
+    start_hour: 20
+    end_hour: 8  # Next day
+    duration_hours: 12
+    desirability_score: -7  # Most undesirable
+
+# WEEKLY SCHEDULE TEMPLATE
+# Define which shift types run on which days
+weekly_template:
+  monday:
+    - day
+    - evening
+    - night
+  tuesday:
+    - day
+    - evening
+    - night
+  wednesday:
+    - day
+    - evening
+    - night
+  thursday:
+    - day
+    - evening
+    - night
+  friday:
+    - day
+    - evening
+    - night
+  saturday:
+    - weekend_day
+    - weekend_night
+  sunday:
+    - weekend_day
+    - weekend_night
+
+# OPTIMIZATION SETTINGS
+optimization:
+  max_solve_time_seconds: 30  # Maximum time to spend solving
+  prioritize_hard_constraints: true
+  fairness_window_weeks: 4  # Look at fairness over this many weeks
