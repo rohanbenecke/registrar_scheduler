@@ -36,11 +36,13 @@ ENV/
 *.swo
 *~
 
-# Data files (generated)
-data/
-*.json
-*.csv
-*.xlsx
+# Data files (generated - exclude but keep directory)
+data/*.json
+data/*.csv
+data/*.xlsx
+
+# Stress test results (generated)
+stress_test_results.json
 
 # Streamlit
 .streamlit/
